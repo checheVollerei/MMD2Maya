@@ -1,0 +1,59 @@
+
+global proc AEMD2MayaNodeTemplate( string $nodeName )
+{
+//滚动布局
+    editorTemplate -beginScrollLayout;
+    //
+    editorTemplate -addControl "MDnLinkNode";
+    editorTemplate -addControl "MDnBoneNameTable";
+    editorTemplate -addControl "MDnBoneName";
+    //变换组
+    editorTemplate -beginLayout "基础变换" -collapse false;
+        editorTemplate -addControl "MDnJointOrient";
+        editorTemplate -addSeparator;
+
+        editorTemplate -addControl "MDnInTranslate";
+        editorTemplate -addControl "MDnInRotate";
+
+        editorTemplate -addSeparator;
+
+        editorTemplate -addControl "MDnInheredTranslate";
+        editorTemplate -addControl "MDnInheredRotate";
+        editorTemplate -addControl "MDnInheritedWeight";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "CCDIK" -collapse false;
+        editorTemplate -addControl "MDnIKState";
+        //editorTemplate -addControl "MDnIKLoop";
+       //自定义这里随便写一个就行，里边根据符号分割出模型名称
+        editorTemplate -callCustom "CreatMDSubUI""UpdateMDSubUI""MDnIKAngle";
+        //editorTemplate -addControl "MDnIKAngle";
+    editorTemplate -endLayout;
+//GroupEnd
+    //这个好像是覆写
+    editorTemplate -addExtraControls;
+//滚动布局end
+    editorTemplate -endScrollLayout;
+
+	editorTemplate -suppress "caching";
+	editorTemplate -suppress "nodeState";
+    
+}
+global proc CreatMDSubUI( string $attrName )
+{
+    python("import MMD2MayaScript.Command.MD2MayaTemplate as AttrEditor");
+    string $tmp[];
+	tokenize($attrName, ".", $tmp);
+	string $nodeName = $tmp[0];
+    python("AttrEditor.createUITemplate('"+$nodeName+"')");
+}
+global proc UpdateMDSubUI( string $attrName )
+{
+    string $tmp[];
+	tokenize($attrName, ".", $tmp);
+	string $nodeName = $tmp[0];
+    python("AttrEditor.updateUITemplate('"+$nodeName+"')");
+    
+}
+
+
