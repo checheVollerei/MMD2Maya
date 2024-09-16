@@ -1,5 +1,4 @@
 
-
 global proc installModule()
 {
     string $melWhatIs = `whatIs "installModule"`;
