@@ -23,7 +23,5 @@ def createMMD2MayaWindow():
     MdOveTool.createToolShelf()
     MDEditor.CreateMenu()
 cmds.evalDeferred('loadDependencyPlugin()')
-#这个函数要延迟执行，以确保shelfLayout被maya创建之后执行，
-# 否则maya创建的时候还是会覆盖掉noDefaultPopup属性
 cmds.evalDeferred('createMMD2MayaWindow()')
 #createToolShelf()
