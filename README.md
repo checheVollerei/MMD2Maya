@@ -15,7 +15,7 @@
 - ## 插件介绍 :
 	- 本插件是以外部自定义节点`MD2MayaNode`计算数值然后传回Maya内部节点的方式运行的
 	- 其平移和旋转的控制是由`MikuDanceTranslate`和`MikuDanceRotates`属性传到MD2MayaNode，经过计算传回默认的translate和rotate
-	- 要编辑旋转和平移属性，请右键MD2MayaTool下的平移和旋转图标然后选择覆盖,会在按下W,R并且选择被连接到MD2MayaNode的时候切换到自定义属性的控制柄
+	- 要编辑旋转和平移属性，请右键MMD2MayaTool下的平移和旋转图标然后选择覆盖,会在按下W,R并且选择被连接到MD2MayaNode的时候切换到自定义属性的控制柄
 	- ### 当前版本不支持的 :
 		- 对于连接到`MD2MayaNode`的节点:
 			1. 不支持`RotateAxis`属性
