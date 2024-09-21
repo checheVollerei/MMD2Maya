@@ -582,15 +582,16 @@ class BuildScene:
         cmds.select(meshDag.fullPathName(),add=True)
         #这个函数返回一个skinCluster节点名：{skinCluster}
         #生成蒙皮绑定cluster[0]=skinCluster
-        cluster = cmds.skinCluster(tsb = True)
+        cluster = cmds.skinCluster(toSelectedBones = True,
+                                    skinMethod=2,
+                                    maximumInfluences=4,
+                                    obeyMaxInfluences=True)
+        
         selList = OpenMaya.MSelectionList()
         selList.add(cluster[0])
         clusterNode = OpenMaya.MObject()
         selList.getDependNode(0, clusterNode)
         skin = OpenMayaAnim.MFnSkinCluster(clusterNode)
-        maxInfluences= skin.findPlug('maxInfluences',True)
-        maxInfluences.setInt(4)
-        cmds.select(clear = True)
 
         vertexCom=OpenMaya.MItMeshVertex(meshDag)
         v_component=OpenMaya.MFnSingleIndexedComponent()
@@ -598,39 +599,42 @@ class BuildScene:
         Index_vertex=OpenMaya.MIntArray()
         
         weight=OpenMaya.MDoubleArray(vertexCount*jointCount,0.0)
-        vex=0
+        blendWeight=OpenMaya.MDoubleArray(vertexCount,0.0)
+        
         while not vertexCom.isDone():
-            verID=vertexCom.index()
+            vexID=vertexCom.index()
             valueTest=0.0
-            if WeightData[vex].WeightType==0:
+            if WeightData[vexID].WeightType==0:
                     #骨骼索引
-                    index_a=WeightData[vex].Index[0]
+                    index_a=WeightData[vexID].Index[0]
                     #顶点计数*骨骼数=当前顶点的权重区间【0-骨骼数】
-                    index_b=vex*(jointCount)+index_a
-                    weight[index_b]=WeightData[vex].WeightValue[index_a]
-                    valueTest+=WeightData[vex].WeightValue[index_a]
-            if WeightData[vex].WeightType==1:
+                    index_b=vexID*(jointCount)+index_a
+                    weight[index_b]=WeightData[vexID].WeightValue[index_a]
+            if WeightData[vexID].WeightType==1:
                 for x in range(0,2):
-                    index_a=WeightData[vex].Index[x]
+                    index_a=WeightData[vexID].Index[x]
 
-                    index_b=vex*(jointCount)+index_a
-                    weight[index_b]=WeightData[vex].WeightValue[index_a]
-                    valueTest+=WeightData[vex].WeightValue[index_a]
-            if WeightData[vex].WeightType==2:
+                    index_b=vexID*(jointCount)+index_a
+                    weight[index_b]=WeightData[vexID].WeightValue[index_a]
+            if WeightData[vexID].WeightType==2:
                 for y in range(0,4):
-                    index_a=WeightData[vex].Index[y]
-                    index_b=vex*(jointCount)+index_a
-                    weight[index_b]=WeightData[vex].WeightValue[index_a]
-                    valueTest+=WeightData[vex].WeightValue[index_a]
-            if WeightData[vex].WeightType==3:
+                    index_a=WeightData[vexID].Index[y]
+                    index_b=vexID*(jointCount)+index_a
+                    weight[index_b]=WeightData[vexID].WeightValue[index_a]
+            if WeightData[vexID].WeightType==3:
                 for z in range(0,2):
-                    index_a=WeightData[vex].Index[z]
-                    index_b=vex*(jointCount)+index_a
-                    weight[index_b]=WeightData[vex].WeightValue[index_a]
-                    valueTest+=WeightData[vex].WeightValue[index_a]
-            vex+=1
+                    index_a=WeightData[vexID].Index[z]
+                    index_b=vexID*(jointCount)+index_a
+                    weight[index_b]=WeightData[vexID].WeightValue[index_a]
+            if WeightData[vexID].WeightType==4:
+                blendWeight[vexID]=1.0
+                for w in range(0,4):
+                    index_a=WeightData[vexID].Index[w]
+                    index_b=vexID*(jointCount)+index_a
+                    weight[index_b]=WeightData[vexID].WeightValue[index_a]
             vertexCom.next()
         skin.setWeights(meshDag,mObj,SkeletonData[2],weight,True)
+        skin.setBlendWeights(meshDag,mObj,blendWeight)
     #}
     def buildRigidBody(self,RigidBodyData):
     #{
